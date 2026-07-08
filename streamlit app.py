@@ -1,125 +1,140 @@
-# Public Health Priority Engine
+import streamlit as st
+import pandas as pd
 
-## Deskripsi
-Public Health Priority Engine adalah aplikasi berbasis Python dan Streamlit untuk membantu menentukan prioritas intervensi kesehatan masyarakat pada tingkat desa.
+st.set_page_config(
+    page_title="Public Health Priority Dashboard",
+    layout="wide"
+)
 
-Aplikasi ini menggunakan beberapa indikator kesehatan masyarakat, yaitu:
+st.title("🏥 Public Health Priority Dashboard")
 
-- Prevalensi stunting (%)
-- Cakupan imunisasi lengkap (%)
-- Kasus DBD tahunan
-- Akses air bersih (%)
-- Sanitasi layak (%)
-- Persentase kemiskinan (%)
+st.write("""
+Upload hasil analisis TOPSIS untuk ditampilkan
+dalam bentuk dashboard interaktif.
+""")
 
-Output yang dihasilkan berupa:
+# ==========================================
+# Upload file
+# ==========================================
 
-- Ranking desa prioritas
-- Skor prioritas intervensi
-- Visualisasi grafik
-- File hasil yang dapat diunduh
+ranking_file = st.file_uploader(
+    "Upload Hasil_Ranking_TOPSIS.xlsx",
+    type=["xlsx"]
+)
 
----
+ranking_png = st.file_uploader(
+    "Upload Ranking_TOPSIS.png",
+    type=["png"]
+)
 
-## Struktur Folder
+heatmap_png = st.file_uploader(
+    "Upload Heatmap.png",
+    type=["png"]
+)
 
-```text
-PublicHealthWeb/
-│
-├── app.py
-├── requirements.txt
-├── README.md
-└── Public_Health_Priority_25_Desa.xlsx
-```
+pie_png = st.file_uploader(
+    "Upload Pie_Kategori.png",
+    type=["png"]
+)
 
----
+dashboard_png = st.file_uploader(
+    "Upload Dashboard.png",
+    type=["png"]
+)
 
-## Instalasi
+laporan_docx = st.file_uploader(
+    "Upload Laporan_Hasil.docx",
+    type=["docx"]
+)
 
-Install seluruh library yang dibutuhkan:
+# ==========================================
+# Ranking Excel
+# ==========================================
 
-```bash
-pip install -r requirements.txt
-```
+if ranking_file:
 
-atau
+    st.header("📊 Ranking Prioritas Desa")
 
-```bash
-pip install streamlit pandas openpyxl matplotlib
-```
+    df = pd.read_excel(ranking_file)
 
----
+    st.dataframe(
+        df,
+        use_container_width=True
+    )
 
-## Menjalankan Aplikasi
+    st.metric(
+        "Jumlah Desa",
+        len(df)
+    )
 
-Jalankan perintah berikut:
+    st.metric(
+        "Desa Prioritas Utama",
+        df.iloc[0]["Desa"]
+    )
 
-```bash
-streamlit run app.py
-```
+# ==========================================
+# Ranking Chart
+# ==========================================
 
-Kemudian buka browser pada alamat:
+if ranking_png:
 
-```text
-http://localhost:8501
-```
+    st.header("📈 Ranking TOPSIS")
 
----
+    st.image(
+        ranking_png,
+        use_container_width=True
+    )
 
-## Cara Menggunakan
+# ==========================================
+# Heatmap
+# ==========================================
 
-1. Jalankan aplikasi.
-2. Upload file Excel dengan format yang sesuai.
-3. Klik tombol **Analisis**.
-4. Sistem akan menghasilkan:
-   - Ranking prioritas desa
-   - Grafik prioritas
-   - File hasil yang dapat diunduh
+if heatmap_png:
 
----
+    st.header("🔥 Heatmap Korelasi")
 
-## Metode Analisis
+    st.image(
+        heatmap_png,
+        use_container_width=True
+    )
 
-Aplikasi menggunakan metode:
+# ==========================================
+# Pie Chart
+# ==========================================
 
-- Simple Additive Weighting (SAW)
+if pie_png:
 
-dengan pendekatan:
+    st.header("🥧 Distribusi Risiko")
 
-### Benefit Criteria
-Semakin tinggi nilainya semakin baik:
+    st.image(
+        pie_png,
+        use_container_width=True
+    )
 
-- Imunisasi
-- Air Bersih
-- Sanitasi
+# ==========================================
+# Dashboard Summary
+# ==========================================
 
-### Cost Criteria
-Semakin tinggi nilainya semakin membutuhkan intervensi:
+if dashboard_png:
 
-- Stunting
-- DBD
-- Kemiskinan
+    st.header("📋 Dashboard Keseluruhan")
 
----
+    st.image(
+        dashboard_png,
+        use_container_width=True
+    )
 
-## Teknologi yang Digunakan
+# ==========================================
+# Download Laporan
+# ==========================================
 
-- Python
-- Pandas
-- Matplotlib
-- Streamlit
-- OpenPyXL
+if laporan_docx:
 
----
+    st.header("📄 Laporan")
 
-## Pengembang
-
-Nama: Neha Dyana Angelyta  
-Program Studi: S1 Farmasi  
-Universitas Islam Indonesia
-
----
-
-## Lisensi
-
-Proyek ini bersifat open-source dan dapat digunakan untuk tujuan pendidikan dan penelitian.
+    st.download_button(
+        label="Download Laporan DOCX",
+        data=laporan_docx,
+        file_name="Laporan_Hasil.docx",
+        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )
